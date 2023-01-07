@@ -99,7 +99,6 @@ def rotary_changed(change):
     # round countdown to nearest minute
     countdown = countdown - (countdown % 60)
     isActive = False
-
     rotaryValue += 1
     print("Rotary CW", rotaryValue)
   elif change == Rotary.ROT_CCW:
@@ -118,7 +117,6 @@ def rotary_changed(change):
     else:    
       isActive = True
     asyncio.run(beep())
-    print("Switch pressed")
   elif change == Rotary.SW_RELEASE:
     print("Switch released")
 
@@ -127,11 +125,11 @@ rotary.add_handler(rotary_changed)
 # SMA420564 pinout mapping to GPIO pins
 pin = [
   # Top row
-  Pin(4, Pin.OUT), # GP4
+  Pin(4, Pin.OUT), # GP4 through 220 Ohm resistor
   Pin(5, Pin.OUT), # GP5
   Pin(6, Pin.OUT), # GP6
-  Pin(7, Pin.OUT), # GP7
-  Pin(8, Pin.OUT), # GP8
+  Pin(7, Pin.OUT), # GP7 through 220 Ohm resistor
+  Pin(8, Pin.OUT), # GP8 through 220 Ohm resistor
   Pin(9, Pin.OUT), # GP9
   
   # Bottom row
@@ -140,7 +138,7 @@ pin = [
   Pin(18, Pin.OUT), # GP18
   Pin(19, Pin.OUT), # GP19
   Pin(20, Pin.OUT), # GP20
-  Pin(21, Pin.OUT)  # GP21
+  Pin(21, Pin.OUT)  # GP21 through 220 Ohm resistor
 ]
 
 buzz()
@@ -215,10 +213,7 @@ def cleanupDigitPins():
 
 cleanupDigitPins()
 
-
-
 while True:
-  #cleanup()
   minutes = countdown // 60
   seconds = countdown % 60
 
@@ -228,12 +223,10 @@ while True:
 
   # display the time with digits
   # flicker the display 125 times per second to make it more visible
-
   if(countdown>0):
     for flicker in range(1,125):
         for displayIndex in range(1, 5):
           digit = int(displayString[displayIndex - 1])
-          #print("display ", digit, " at ", displayIndex)
           display(digit, displayIndex)
     if(isActive):
       countdown -= 1
@@ -244,7 +237,3 @@ while True:
     buzz()
     time.sleep(1)
     countdown = -1
-
-# Final shutdown
-cleanupDigitPins()
-buzzer.deinit()
