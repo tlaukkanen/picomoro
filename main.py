@@ -141,9 +141,9 @@ pin = [
   Pin(21, Pin.OUT)  # GP21 through 220 Ohm resistor
 ]
 
-buzz()
+asyncio.run(buzz())
 time.sleep(1)
-beep()
+asyncio.run(beep())
 
 def getGND(place):
   p = 0
@@ -174,6 +174,10 @@ def displayIdle():
   #pin[11].off()
   pin[10].on()
 
+def cleanup():
+  for i in [1,2,5,6,7,9,10]:
+    pin[i].off()  
+
 def display(digit,place):
   gnd = getGND(place)
   pin[gnd].off()
@@ -192,18 +196,8 @@ def display(digit,place):
   if digit in pin10digits:
     pin[10].on()
   time.sleep(0.002)
-  pin[1].off()
-  pin[2].off()
-  pin[5].off()
-  pin[6].off()
-  pin[7].off()
-  pin[9].off()
-  pin[10].off()  
+  cleanup()
   pin[gnd].on()
-
-def cleanup():
-  for i in [1,2,5,6,7,9,10]:
-    pin[i].off()
 
 def cleanupDigitPins():
     pin[0].on()
@@ -234,6 +228,7 @@ while True:
     displayIdle()
 
   if(countdown == 0):
-    buzz()
-    time.sleep(1)
+    for t in range(0,3):
+      asyncio.run(buzz())
+      time.sleep(1)
     countdown = -1
